@@ -8,6 +8,7 @@ import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 import { login } from '@/routes';
 import { store } from '@/routes/register';
+import SocialLoginButtons from '@/components/social-login-buttons';
 
 export default function Register() {
     return (
@@ -99,6 +100,8 @@ export default function Register() {
                                 Create account
                             </Button>
                         </div>
+
+                        <SocialLoginButtons />
 
                         <div className="text-center text-sm text-muted-foreground">
                             Already have an account?{' '}

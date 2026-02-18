@@ -19,6 +19,7 @@ export default defineConfig({
         tailwindcss(),
         wayfinder({
             formVariants: true,
+            phpBinary: 'docker exec laravel-app php',
         }),
     ],
     esbuild: {

@@ -2,48 +2,57 @@
 
 namespace App\Ai\Agents;
 
-
-use Stringable;
-use Laravel\Ai\Promptable;
+use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Ai\Contracts\Agent;
+use Laravel\Ai\Contracts\Conversational;
 use Laravel\Ai\Contracts\HasStructuredOutput;
 use Laravel\Ai\Contracts\HasTools;
-use Illuminate\Contracts\JsonSchema\JsonSchema;
-use Laravel\Ai\Contracts\Conversational;
-use Laravel\Ai\Attributes\Model;
-use Laravel\Ai\Attributes\Provider;
-use Laravel\Ai\Attributes\Temperature;
+use Laravel\Ai\Promptable;
+use Stringable;
 
-// #[Provider('openai')]            // Forzamos que use OpenAI
-// #[Model('gpt-o3-mini')]             // Usamos el modelo inteligente para mejores recomendaciones
-// #[Temperature(0.5)]              // Creatividad media (0 = robot, 1 = poeta loco)
-class LibrarianAgent implements Agent, Conversational, HasTools, HasStructuredOutput
+class LibrarianAgent implements Agent, Conversational, HasStructuredOutput, HasTools
 {
     use Promptable;
 
     /**
-     * Get the instructions that the agent should follow.
+     * @param  array{genres?: string[], notes?: string}|null  $userPreferences
      */
+    public function __construct(private readonly ?array $userPreferences = null) {}
+
     public function instructions(): Stringable|string
     {
-        return "You are an expert librarian with 40 years of experience. 
-                Your job is to recommend books based on abstract tastes.
-                Your recommendations should be masterpieces or hidden gems, avoiding obvious bestsellers.
-                The summary should be captivating but accurate";
+        $base = 'You are an expert librarian with 40 years of experience.
+Your job is to recommend books based on abstract tastes.
+Your recommendations should be masterpieces or hidden gems, avoiding obvious bestsellers.
+The summary should be captivating but accurate.';
+
+        if (! empty($this->userPreferences)) {
+            $genres = implode(', ', $this->userPreferences['genres'] ?? []);
+            $notes = $this->userPreferences['notes'] ?? '';
+
+            $base .= "\n\nThis user's reading preferences:";
+
+            if ($genres) {
+                $base .= "\n- Favourite genres: {$genres}";
+            }
+
+            if ($notes) {
+                $base .= "\n- Additional notes: {$notes}";
+            }
+
+            $base .= "\n\nWeigh these preferences heavily when making recommendations.";
+        }
+
+        return $base;
     }
 
-    /**
-     * Get the list of messages comprising the conversation so far.
-     */
     public function messages(): iterable
     {
         return [];
     }
 
     /**
-     * Get the tools available to the agent.
-     *
-     * @return Tool[]
+     * @return iterable<mixed>
      */
     public function tools(): iterable
     {
@@ -51,7 +60,7 @@ class LibrarianAgent implements Agent, Conversational, HasTools, HasStructuredOu
     }
 
     /**
-     * Get the agent's structured output schema definition.
+     * @return array<string, mixed>
      */
     public function schema(JsonSchema $schema): array
     {

@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -22,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'book_preferences',
     ];
 
     /**
@@ -47,6 +49,17 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
+            'book_preferences' => 'array',
         ];
+    }
+
+    public function recommendations(): HasMany
+    {
+        return $this->hasMany(Recommendation::class)->latest();
+    }
+
+    public function userBooks(): HasMany
+    {
+        return $this->hasMany(UserBook::class)->latest();
     }
 }

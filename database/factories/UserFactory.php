@@ -56,4 +56,19 @@ class UserFactory extends Factory
             'two_factor_confirmed_at' => now(),
         ]);
     }
+
+    /**
+     * Indicate that the model has completed onboarding with book preferences.
+     *
+     * @param  string[]  $genres
+     */
+    public function withBookPreferences(array $genres = ['sci-fi', 'fantasy'], string $notes = ''): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'book_preferences' => [
+                'genres' => $genres,
+                'notes' => $notes,
+            ],
+        ]);
+    }
 }

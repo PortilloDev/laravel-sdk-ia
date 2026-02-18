@@ -10,6 +10,7 @@ import AuthLayout from '@/layouts/auth-layout';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
+import SocialLoginButtons from '@/components/social-login-buttons';
 
 type Props = {
     status?: string;
@@ -97,6 +98,8 @@ export default function Login({
                                 Log in
                             </Button>
                         </div>
+
+                        <SocialLoginButtons />
 
                         {canRegister && (
                             <div className="text-center text-sm text-muted-foreground">
